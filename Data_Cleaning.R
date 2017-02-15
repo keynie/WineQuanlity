@@ -1,4 +1,8 @@
 # 先安装这些包才能用library()函数载入
+install.packages("ggplot")
+install.packages("gridExtra")
+
+
 # caret: 提供获取、使用、评估成百上千个机器学习模型及其拟合效果的系统交互界面
 # 为机器学习提供了结构化的方法并且对一系列机器学习过程进行评估
 library(caret)
@@ -27,10 +31,35 @@ library(reshape2)
 library(psych)
 # plyr: 可以将数据分割成更小的数据，然后对分割后的数据进行些操作，最后把操作的结果汇总
 library(plyr)
-redwine.dat<-read.table("/Users/apple/Desktop/img/winequality/winequality-red.csv", sep = ";", header=T)
+library(ggplot2)
+library (gridExtra)
+redwine.dat<-read.table("/Users/apple/Desktop/img/winequality/WineQuanlity/winequality-red.csv", sep = ";", header=T)
 str(redwine.dat)
 summary(redwine.dat)
-whitewine.dat<-read.table("/Users/apple/Desktop/img/winequality/winequality-white.csv", sep = ";", header=T)
+whitewine.dat<-read.table("/Users/apple/Desktop/img/winequality/WineQuanlity/winequality-white.csv", sep = ";", header=T)
 str(whitewine.dat)
 summary(whitewine.dat)
 
+q1<-ggplot(aes(x=pH),
+           data =  subset(whitewine.dat,type %in% c("fixed.acidity")))+
+  geom_histogram(color =I('black'),fill = I('#099009'))+
+  ggtitle('pH distribution for White wine')
+q2<-ggplot(aes(x=free.sulfur.dioxide),
+           data =  subset(whitewine.dat,type %in% c("W")))+
+  geom_histogram(color =I('black'),fill = I('#099009'))+
+  ggtitle('Free SO2 distribution for White wine')
+q3<-ggplot(aes(x=total.sulfur.dioxide),
+           data =  subset(whitewine.dat,type %in% c("W")))+
+  geom_histogram(color =I('black'),fill = I('#099009'))+
+  ggtitle('Total SO2 distribution for White wine')
+q4<-ggplot(aes(x=alcohol),
+           data =  subset(whitewine.dat,type %in% c("W")))+
+  geom_histogram(color =I('black'),fill = I('#099009'))+
+  ggtitle('Alcohol distribution for White wine')
+
+library(GGally)
+theme_set(theme_minimal(20))
+set.seed(2183)
+ggpairs(whitewine.dat[sample.int(nrow(whitewine.dat),1000),])
+whitewine.dat$citric.acid[which(whitewine.dat$citric.acid==0)]<-NA
+summary(whitewine.dat)
