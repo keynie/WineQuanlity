@@ -1,11 +1,15 @@
 # 先安装这些包才能用library()函数载入
 install.packages("ggplot")
 install.packages("gridExtra")
+install.packages("imputeMissings")
+install.packages("theme_set")
 
 
 # caret: 提供获取、使用、评估成百上千个机器学习模型及其拟合效果的系统交互界面
 # 为机器学习提供了结构化的方法并且对一系列机器学习过程进行评估
 library(caret)
+library(ggpairs)
+
 # e1071: 各类计量经济和机器学习的延伸；我们通过naiveBayes()函数进行朴素贝叶斯判别
 library(e1071)
 # gridExtra: 绘图辅助功能，将不同的图形组合在一起成为图表
@@ -39,14 +43,16 @@ summary(redwine.dat)
 whitewine.dat<-read.table("/Users/apple/Desktop/img/winequality/WineQuanlity/winequality-white.csv", sep = ";", header=T)
 str(whitewine.dat)
 summary(whitewine.dat)
-
+whitewine.dat$citric.acid[which(whitewine.dat$citric.acid==0)]<-NA
+redwine.dat$citric.acid[which(redwine.dat$citric.acid==0)]<-NA
+summary(whitewine.dat)
+WineTianBu<-impute(whitewine.dat,method="median/mode")
 q1<-ggplot(aes(x=pH),
            data =  subset(whitewine.dat,type %in% c("fixed.acidity")))+
   geom_histogram(color =I('black'),fill = I('#099009'))+
   ggtitle('pH distribution for White wine')
 q2<-ggplot(aes(x=free.sulfur.dioxide),
-           data =  subset(whitewine.dat,type %in% c("W")))+
-  geom_histogram(color =I('black'),fill = I('#099009'))+
+           data =  subset(whitewine.dat,type %in% c("W")))+a
   ggtitle('Free SO2 distribution for White wine')
 q3<-ggplot(aes(x=total.sulfur.dioxide),
            data =  subset(whitewine.dat,type %in% c("W")))+
@@ -58,8 +64,15 @@ q4<-ggplot(aes(x=alcohol),
   ggtitle('Alcohol distribution for White wine')
 
 library(GGally)
-theme_set(theme_minimal(20))
-set.seed(2183)
+
 ggpairs(whitewine.dat[sample.int(nrow(whitewine.dat),1000),])
 whitewine.dat$citric.acid[which(whitewine.dat$citric.acid==0)]<-NA
 summary(whitewine.dat)
+
+theme_set(theme_minimal(20))
+set.seed(2183)
+ggpairs(WineTianBu[sample.int(nrow(WineTianBu),1000),])
+
+
+summary(WineTianBu)
+summary(redwine.dat)
